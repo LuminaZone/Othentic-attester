@@ -9,6 +9,16 @@ contract IntentReceiver {
 
     Intent[] public intents;
 
+     function afterTaskSubmission(TaskInfo calldata taskInfo, bool /* _isApproved */, bytes calldata /* _tpSignature */, uint256[2] calldata /* _taSignature */, uint256[] calldata /* _operatorIds */) external {
+        require(msg.sender == attestationCenter, "Not allowed");
+
+        //
+        taskInfo.taskPerformer = msg.sender;
+        (uint chainId, address to, bytes memory data)= abi.decode(taskInfo.data, (uint, address, bytes));
+
+        sendIntent(chainId, to, data);
+    }
+
     function storeIntent(address _to, bytes calldata _data) public {
         intents.push(Intent(_to, _data));
     }

@@ -17,6 +17,13 @@ contract IntentSender is IAvsLogic {
         attestationCenter = _attestationCenter;
     }
 
+    struct TaskInfo {
+        string proofOfTask;
+        bytes data;
+        address taskPerformer;
+        uint16 taskDefinitionId;
+    }
+
     Intent[] public intents;
 
     uint public relayerId;
@@ -29,14 +36,6 @@ contract IntentSender is IAvsLogic {
         emit IntentSent(block.number, relayerId, chainId, _to, _data);
         
     }   
-
-    function afterTaskSubmission(uint16 /* _taskDefinitionId */, address /* _performerAddr */, string calldata _proofOfTask, bool /* _isApproved */, bytes calldata /* _tpSignature */, uint256[2] calldata /* _taSignature */, uint256[] calldata /* _operatorIds */) external {
-        require(msg.sender == attestationCenter, "Not allowed");
-
-        relayerId = uint(keccak256(abi.encode(block.timestamp))) ^
-            uint(keccak256(abi.encode(block.prevrandao))) ^
-            uint(keccak256(bytes(_proofOfTask)));
-    }
 
     function beforeTaskSubmission(uint16 _taskDefinitionId, address _performerAddr, string calldata _proofOfTask, bool _isApproved, bytes calldata _tpSignature, uint256[2] calldata _taSignature, uint256[] calldata _operatorIds) external {
         // No implementation
