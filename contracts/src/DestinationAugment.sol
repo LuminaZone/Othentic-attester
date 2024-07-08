@@ -46,7 +46,7 @@ contract DestinationAugment is
         _burn(msg.sender, amount);
         // build abi function call
         bytes4 selector = bytes4(keccak256(bytes("mint(address,uint256)")));
-        IIntentSender(intentSender).sendIntent(chainId,to, abi.encodeWithSelector(selector, to, amount));
+        IIntentSender(intentReceiver).sendIntent(chainId,to, abi.encodeWithSelector(selector, to, amount));
     }
 
     function _update(
