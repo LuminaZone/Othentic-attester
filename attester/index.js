@@ -17,6 +17,29 @@ const rpcUrl = process.env.L2_RPC;
 
 const provider = new ethers.JsonRpcProvider(rpcUrl);
 
+// The IntentSender contract object
+const intentSenderAddress = process.env.INTENT_SENDER_ADDRESS;
+const intentSenderAbi = [
+  "event IntentSent(uint256 block, uint256 relayerId, uint256 chainId, address _to, bytes _data)",
+];
+const intentSenderContract = new ethers.Contract(
+  intentSenderAddress,
+  intentSenderAbi,
+  provider,
+);
+
+// The IntentReceiver contract object
+const intentReceiverAddress = process.env.INTENT_RECEIVER_ADDRESS;
+const intentReceiverAbi = [
+  "function storeIntent(address _to, bytes _data)",
+  "function executeIntent()",
+];
+const intentReceiverContract = new ethers.Contract(
+  intentReceiverAddress,
+  intentReceiverAbi,
+  provider,
+);
+
 // The AttestationCenter contract object
 const attestationCenterAddress = process.env.ATTESTATION_CENTER_ADDRESS;
 const attestationCenterAbi = [
@@ -26,7 +49,7 @@ const attestationCenterAbi = [
 const attestationCenterContract = new ethers.Contract(
   attestationCenterAddress,
   attestationCenterAbi,
-  provider
+  provider,
 );
 
 /**
@@ -36,11 +59,11 @@ async function electedLeader(blockNumber) {
   const count = await attestationCenterContract.numOfOperators({
     blockTag: blockNumber,
   });
-  const selectedOperatorId = (BigInt(blockNumber)/20n % count) + 1n;
+  const selectedOperatorId = ((BigInt(blockNumber) / 20n) % count) + 1n;
   const paymentDetails =
     await attestationCenterContract.getOperatorPaymentDetail(
       selectedOperatorId,
-      { blockTag: blockNumber }
+      { blockTag: blockNumber },
     );
   return paymentDetails[0];
 }
@@ -54,40 +77,51 @@ async function electedLeader(blockNumber) {
  * number modulo the number of operators (plus 1). This gives us a number in
  * the range [1..count], which we use as the ID of the chosen performer.
  */
-provider.on("block", async (blockNumber) => {
-  if (blockNumber % 20 == 0) {
-    // Every operator knows who is supposed to send a task in the next block
-    const currentPerformer = await electedLeader(blockNumber);
+intentSenderContract.on(
+  "IntentSent",
+  async (block, relayerId, chainId, _to, _data, event) => {
+    const blockNumber = event.blockNumber;
 
-    // If the current performer is the operator itself, it performs the task
-    if (currentPerformer === nodeAccount.address) {
-      console.log(`Performing task for block ${blockNumber}...`);
-      const proofOfTask = `${blockNumber}+${Date.now()}`;
-      const taskDefinitionId = 0;
-      const data = ethers.hexlify(ethers.toUtf8Bytes("hello world"));
-      const message = ethers.AbiCoder.defaultAbiCoder().encode(
-        ["string", "bytes", "address", "uint16"],
-        [proofOfTask, data, nodeAccount.address, taskDefinitionId]
-      );
-      const messageHash = ethers.keccak256(message);
-      const sig = nodeAccount.signingKey.sign(messageHash).serialized;
+    if (blockNumber % 20 == 0) {
+      // Every operator knows who is supposed to send a task in the next block
+      const currentPerformer = await electedLeader(blockNumber);
 
-      console.log(`Performing task with seed: ${proofOfTask}`);
+      // If the current performer is the operator itself, it performs the task
+      if (currentPerformer === nodeAccount.address) {
+        const storeTxn = await intentReceiverContract.storeIntent(_to, _data);
+        await storeTxn.wait();
 
-      const jsonRpcBody = {
-        jsonrpc: "2.0",
-        method: "sendTask",
-        params: [proofOfTask, data, taskDefinitionId, nodeAccount.address, sig],
-      };
-      // The tasks consists of signing the current timestamp. The timestamp
-      // will be used as the seed for our PRNG smart contract
-      new ethers.JsonRpcProvider(NODE_RPC).send(
-        jsonRpcBody.method,
-        jsonRpcBody.params
-      );
+        const executeTxn = await intentReceiverContract.executeIntent();
+        await executeTxn.wait();
+
+        // console.log(`Performing task for block ${blockNumber}...`);
+        // const proofOfTask = `${blockNumber}+${Date.now()}`;
+        // const taskDefinitionId = 0;
+        // const data = ethers.hexlify(ethers.toUtf8Bytes("hello world"));
+        // const message = ethers.AbiCoder.defaultAbiCoder().encode(
+        //   ["string", "bytes", "address", "uint16"],
+        //   [proofOfTask, data, nodeAccount.address, taskDefinitionId],
+        // );
+        // const messageHash = ethers.keccak256(message);
+        // const sig = nodeAccount.signingKey.sign(messageHash).serialized;
+
+        // console.log(`Performing task with seed: ${proofOfTask}`);
+
+        // const jsonRpcBody = {
+        //   jsonrpc: "2.0",
+        //   method: "sendTask",
+        //   params: [proofOfTask, data, taskDefinitionId, nodeAccount.address, sig],
+        // };
+        // // The tasks consists of signing the current timestamp. The timestamp
+        // // will be used as the seed for our PRNG smart contract
+        // new ethers.JsonRpcProvider(NODE_RPC).send(
+        //   jsonRpcBody.method,
+        //   jsonRpcBody.params,
+        // );
+      }
     }
-  }
-});
+  },
+);
 
 /**
  * AVS WebAPI endpoint:
@@ -101,7 +135,7 @@ app.post("/task/validate", async (req, res) => {
   const electedPerformer = await electedLeader(blockNumber); // Get the elected performer for that block
 
   console.log(
-    `Validating task for block number: ${blockNumber}, Task Performer: ${performer}, Elected Performer: ${electedPerformer}`
+    `Validating task for block number: ${blockNumber}, Task Performer: ${performer}, Elected Performer: ${electedPerformer}`,
   );
 
   let isValid = performer === electedPerformer; // Verify the performer is the elected performer
