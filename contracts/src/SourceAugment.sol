@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./interfaces/IIntentSender.sol";
 
-contract LuminaTeleportERC20 is
+contract SourceAugment is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,

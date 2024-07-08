@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IIntentSender.sol";
 import "./IAvsLogic.sol";
 
-contract LuminaTeleportERC20 is
+contract DestinationAugment is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,
@@ -41,11 +41,11 @@ contract LuminaTeleportERC20 is
         _unpause();
     }
 
-    function teleport(address to, uint256 amount) external {
+    function teleport(uint256 chainId, address to, uint256 amount) external {
         _burn(msg.sender, amount);
         // build abi function call
-        bytes memory selector = bytes4(keccak256(bytes("mint(address,uint256)")));
-        IIntentSender(intentSender).sendIntent(to, abi.encodeWithSelector(selector, to, amount));
+        bytes4 selector = bytes4(keccak256(bytes("mint(address,uint256)")));
+        IIntentSender(intentSender).sendIntent(chainId,to, abi.encodeWithSelector(selector, to, amount));
     }
 
     function _update(
