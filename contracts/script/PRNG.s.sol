@@ -18,7 +18,6 @@ $$    $$/   $$  $$/ $$ |  $$ |$$       |$$ |  $$ |  $$  $$/ $$ |$$       |
 
 import {Script, console} from "forge-std/Script.sol";
 import '../src/IAttestationCenter.sol';
-import '../src/PRNG.sol';
 
 // How to:
 // Either `source ../../.env` or replace variables in command.
@@ -30,7 +29,5 @@ contract PRNGDeploy is Script {
 
     function run(address attestationCenter) public {
         vm.startBroadcast();
-        PRNG prng = new PRNG(attestationCenter);
-        IAttestationCenter(attestationCenter).setAvsLogic(address(prng));
     }
 }

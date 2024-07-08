@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract IntentSender {
+contract IntentReceiver {
     struct Intent {
         address to;
         bytes data;

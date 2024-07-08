@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./IAvsLogic.sol";
+
 
 contract IntentSender is IAvsLogic {
     struct Intent {

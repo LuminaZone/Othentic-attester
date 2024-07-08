@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+import "./interfaces/IIntentSender.sol";
+
 contract LuminaTeleportERC20 is
     ERC20,
     ERC20Burnable,
@@ -41,8 +43,8 @@ contract LuminaTeleportERC20 is
     function teleport(uint256 chainId, address to, uint256 amount) external {
         _burn(msg.sender, amount);
         // build abi function call
-        bytes selector = bytes4(keccak256(bytes("mint(address,uint256)")));
-        IIntentSender(intentSender).sendIntent(chainId, to, abi.encodeWithSelector(selector, to, value));
+        bytes4 selector = bytes4(keccak256(bytes("mint(address,uint256)")));
+        IIntentSender(intentSender).sendIntent(chainId, to, abi.encodeWithSelector(selector, to, amount));
     }
 
     function _update(
