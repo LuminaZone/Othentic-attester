@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.20;
 
-/*______     __      __                              __      __ 
+/*______     __      __                              __      __
  /      \   /  |    /  |                            /  |    /  |
-/$$$$$$  | _$$ |_   $$ |____    ______   _______   _$$ |_   $$/   _______ 
+/$$$$$$  | _$$ |_   $$ |____    ______   _______   _$$ |_   $$/   _______
 $$ |  $$ |/ $$   |  $$      \  /      \ /       \ / $$   |  /  | /       |
-$$ |  $$ |$$$$$$/   $$$$$$$  |/$$$$$$  |$$$$$$$  |$$$$$$/   $$ |/$$$$$$$/ 
+$$ |  $$ |$$$$$$/   $$$$$$$  |/$$$$$$  |$$$$$$$  |$$$$$$/   $$ |/$$$$$$$/
 $$ |  $$ |  $$ | __ $$ |  $$ |$$    $$ |$$ |  $$ |  $$ | __ $$ |$$ |
-$$ \__$$ |  $$ |/  |$$ |  $$ |$$$$$$$$/ $$ |  $$ |  $$ |/  |$$ |$$ \_____ 
+$$ \__$$ |  $$ |/  |$$ |  $$ |$$$$$$$$/ $$ |  $$ |  $$ |/  |$$ |$$ \_____
 $$    $$/   $$  $$/ $$ |  $$ |$$       |$$ |  $$ |  $$  $$/ $$ |$$       |
  $$$$$$/     $$$$/  $$/   $$/  $$$$$$$/ $$/   $$/    $$$$/  $$/  $$$$$$$/
 */
@@ -30,8 +30,8 @@ contract IntentReceiverDeploy is Script {
 
     function run(address attestationCenter) public {
         vm.startBroadcast();
-        IntentReceiver intentReceiver = new intentReceiver(attestationCenter);
+        IntentReceiver intentReceiver = new IntentReceiver();
         IAttestationCenter(attestationCenter).setAvsLogic(address(intentReceiver));
-        DestinationAugmetnt = new DestinationAugment("DestinationAugment", "DSTAUG", address(intentReceiver));
+        DestinationAugment destinationAugment = new DestinationAugment("DestinationAugment", "DSTAUG", address(intentReceiver));
     }
 }

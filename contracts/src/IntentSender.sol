@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "./IAvsLogic.sol";
 
 
-contract IntentSender is IAvsLogic {
+contract IntentSender {
     struct Intent {
         uint256 chainId;
         address to;
@@ -34,8 +34,8 @@ contract IntentSender is IAvsLogic {
         intents.push(Intent(chainId, _to, _data));
 
         emit IntentSent(block.number, relayerId, chainId, _to, _data);
-        
-    }   
+
+    }
 
     function beforeTaskSubmission(uint16 _taskDefinitionId, address _performerAddr, string calldata _proofOfTask, bool _isApproved, bytes calldata _tpSignature, uint256[2] calldata _taSignature, uint256[] calldata _operatorIds) external {
         // No implementation

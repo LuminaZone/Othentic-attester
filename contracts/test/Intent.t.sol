@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.20;
 
-/*______     __      __                              __      __ 
+/*______     __      __                              __      __
  /      \   /  |    /  |                            /  |    /  |
-/$$$$$$  | _$$ |_   $$ |____    ______   _______   _$$ |_   $$/   _______ 
+/$$$$$$  | _$$ |_   $$ |____    ______   _______   _$$ |_   $$/   _______
 $$ |  $$ |/ $$   |  $$      \  /      \ /       \ / $$   |  /  | /       |
-$$ |  $$ |$$$$$$/   $$$$$$$  |/$$$$$$  |$$$$$$$  |$$$$$$/   $$ |/$$$$$$$/ 
+$$ |  $$ |$$$$$$/   $$$$$$$  |/$$$$$$  |$$$$$$$  |$$$$$$/   $$ |/$$$$$$$/
 $$ |  $$ |  $$ | __ $$ |  $$ |$$    $$ |$$ |  $$ |  $$ | __ $$ |$$ |
-$$ \__$$ |  $$ |/  |$$ |  $$ |$$$$$$$$/ $$ |  $$ |  $$ |/  |$$ |$$ \_____ 
+$$ \__$$ |  $$ |/  |$$ |  $$ |$$$$$$$$/ $$ |  $$ |  $$ |/  |$$ |$$ \_____
 $$    $$/   $$  $$/ $$ |  $$ |$$       |$$ |  $$ |  $$  $$/ $$ |$$       |
  $$$$$$/     $$$$/  $$/   $$/  $$$$$$$/ $$/   $$/    $$$$/  $$/  $$$$$$$/
 */
@@ -18,44 +18,3 @@ $$    $$/   $$  $$/ $$ |  $$ |$$       |$$ |  $$ |  $$  $$/ $$ |$$       |
 
 import {Test, console} from "forge-std/Test.sol";
 import {IntentSender} from "../src/IntentSender.sol";
-
-contract CounterTest is Test {
-    IntentSender testContract;
-    address attestationCenter = makeAddr('attestationCenter');
-
-    function setUp() public {
-        testContract = new IntentSender(attestationCenter);
-    }
-
-    function test_acl() public {
-        vm.expectRevert("Not allowed");
-        testContract.afterTaskSubmission(
-            0,
-            makeAddr('relayer'),
-            "123456",
-            true,
-            hex"",
-            [uint(0), uint(0)],
-            new uint[](0)
-        );
-    }
-
-    function test_random() public {
-        vm.prank(attestationCenter);
-        testContract.afterTaskSubmission(
-            0,
-            makeAddr('relayer'),
-            "123456",
-            true,
-            hex"",
-            [uint(0), uint(0)],
-            new uint[](0)
-        );
-
-        uint expected = uint(keccak256(abi.encode(block.timestamp))) ^
-            uint(keccak256(abi.encode(block.prevrandao))) ^
-            uint(keccak256(bytes("123456")));
-
-        //assertEq(testContract.relayerId(), expected);
-    }
-}
