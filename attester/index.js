@@ -97,27 +97,30 @@ intentSenderContract.on(
         // console.log(`Performing task for block ${blockNumber}...`);
         // const proofOfTask = `${blockNumber}+${Date.now()}`;
         // const taskDefinitionId = 0;
-        // const data = ethers.hexlify(ethers.toUtf8Bytes("hello world"));
-        // const message = ethers.AbiCoder.defaultAbiCoder().encode(
-        //   ["string", "bytes", "address", "uint16"],
-        //   [proofOfTask, data, nodeAccount.address, taskDefinitionId],
-        // );
-        // const messageHash = ethers.keccak256(message);
-        // const sig = nodeAccount.signingKey.sign(messageHash).serialized;
+        const data = ethers.AbiCoder.defaultAbiCoder().encode(
+          ["uint", "address", "bytes"],
+          [chainId, _to, _data]
+        )
+        const message = ethers.AbiCoder.defaultAbiCoder().encode(
+         ["string", "bytes", "address", "uint16"],
+        [proofOfTask, data, nodeAccount.address, taskDefinitionId],
+        );
+        const messageHash = ethers.keccak256(message);
+        const sig = nodeAccount.signingKey.sign(messageHash).serialized;
 
-        // console.log(`Performing task with seed: ${proofOfTask}`);
+        console.log(`Performing task with seed: ${proofOfTask}`);
 
-        // const jsonRpcBody = {
-        //   jsonrpc: "2.0",
-        //   method: "sendTask",
-        //   params: [proofOfTask, data, taskDefinitionId, nodeAccount.address, sig],
-        // };
-        // // The tasks consists of signing the current timestamp. The timestamp
-        // // will be used as the seed for our PRNG smart contract
-        // new ethers.JsonRpcProvider(NODE_RPC).send(
-        //   jsonRpcBody.method,
-        //   jsonRpcBody.params,
-        // );
+        const jsonRpcBody = {
+          jsonrpc: "2.0",
+          method: "sendTask",
+          params: [proofOfTask, data, taskDefinitionId, nodeAccount.address, sig],
+        };
+        // The tasks consists of signing the current timestamp. The timestamp
+        // will be used as the seed for our PRNG smart contract
+        new ethers.JsonRpcProvider(NODE_RPC).send(
+          jsonRpcBody.method,
+          jsonRpcBody.params,
+        );
       }
     }
   },

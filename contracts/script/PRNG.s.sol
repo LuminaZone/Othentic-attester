@@ -21,13 +21,15 @@ import '../src/IAttestationCenter.sol';
 
 // How to:
 // Either `source ../../.env` or replace variables in command.
-// forge script PRNGDeploy --rpc-url $L2_RPC --private-key $PRIVATE_KEY
+// forge script IntentReceiverDeploy --rpc-url $L2_RPC --private-key $PRIVATE_KEY
 // --broadcast -vvvv --verify --etherscan-api-key $L2_ETHERSCAN_API_KEY --chain
 // $L2_CHAIN --verifier-url $L2_VERIFIER_URL --sig="run(address)" $ATTESTATION_CENTER_ADDRESS
-contract PRNGDeploy is Script {
+contract IntentReceiverDeploy is Script {
     function setUp() public {}
 
     function run(address attestationCenter) public {
         vm.startBroadcast();
+        IntentReceiver intentReceiver = new intentReceiver(attestationCenter);
+        IAttestationCenter(attestationCenter).setAvsLogic(address(intentReceiver));
     }
 }
