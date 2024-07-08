@@ -17,16 +17,17 @@ contract DestinationAugment is
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    address public intentSender;
+    address public intentReceiver;
 
-    constructor(string memory name, string memory symbol, address intentSender) ERC20(name, symbol) {
+    constructor(string memory name, string memory symbol, address intentReceiver) ERC20(name, symbol) {
         // Grant the contract deployer the default admin role: they can grant and revoke any roles
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         // Grant the minter and pauser roles to the deployer
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
-        intentSender=intentSender;
+        _grantRole(MINTER_ROLE, intentReceiver);
+        intentReceiver=intentReceiver;
     }
 
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {

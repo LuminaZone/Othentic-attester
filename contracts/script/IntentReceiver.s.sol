@@ -18,6 +18,7 @@ $$    $$/   $$  $$/ $$ |  $$ |$$       |$$ |  $$ |  $$  $$/ $$ |$$       |
 
 import {Script, console} from "forge-std/Script.sol";
 import '../src/IAttestationCenter.sol';
+import "../src/DestinationAugment.sol";
 
 // How to:
 // Either `source ../../.env` or replace variables in command.
@@ -31,5 +32,6 @@ contract IntentReceiverDeploy is Script {
         vm.startBroadcast();
         IntentReceiver intentReceiver = new intentReceiver(attestationCenter);
         IAttestationCenter(attestationCenter).setAvsLogic(address(intentReceiver));
+        DestinationAugmetnt = new DestinationAugment("DestinationAugment", "DSTAUG", address(intentReceiver));
     }
 }
