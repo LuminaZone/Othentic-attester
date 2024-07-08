@@ -21,12 +21,12 @@ contract IntentSender is IAvsLogic {
 
     uint public relayerId;
 
-    event IntentSent(uint256 block, uint256 relayerId);
+    event IntentSent(uint256 block, uint256 relayerId, uint256 chainId, address _to, bytes _data);
 
     function sendIntent(uint256 chainId, address _to, bytes calldata _data) public {
         intents.push(Intent(chainId, _to, _data));
 
-        emit IntentSent(block.number, relayerId);
+        emit IntentSent(block.number, relayerId, chainId, _to, _data);
         
     }   
 
