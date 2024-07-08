@@ -18,7 +18,7 @@ contract IntentSender is IAvsLogic {
 
     uint public relayerId;
 
-    function _sendIntent(address _to, bytes calldata _data) public {
+    function sendIntent(address _to, bytes calldata _data) public {
         intents.push(Intent(_to, _data));
         
     }   
