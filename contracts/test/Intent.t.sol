@@ -17,14 +17,14 @@ $$    $$/   $$  $$/ $$ |  $$ |$$       |$$ |  $$ |  $$  $$/ $$ |$$       |
  */
 
 import {Test, console} from "forge-std/Test.sol";
-import {PRNG} from "../src/IntentAttester.sol";
+import {IntentSender} from "../src/IntentSender.sol";
 
 contract CounterTest is Test {
-    PRNG testContract;
+    IntentSender testContract;
     address attestationCenter = makeAddr('attestationCenter');
 
     function setUp() public {
-        testContract = new IntentAttester(attestationCenter);
+        testContract = new IntentSender(attestationCenter);
     }
 
     function test_acl() public {

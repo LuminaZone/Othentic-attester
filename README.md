@@ -1,6 +1,8 @@
 # Lumina-Othentic-Attester
 an external verifier for Eigenlayer AVS lightnode bridge using Othentic stack
 
+![attester-overview](./media/attester-overview.png)
+
 The othentic CLI can be used to create any AVS with just a few lines of code in any language you prefer. Let's look at an example for a psuedo random number generator. We provide a sample docker-compose configuration which sets up the following services:
 - Aggregator node
 - 3 Attester nodes
@@ -8,7 +10,7 @@ The othentic CLI can be used to create any AVS with just a few lines of code in 
 
 ## Run the demo
 
-To run the Pseudo-Random Number Generator AVS demo, you must first deploy an instance of the `PRNG` contract.
+To run the Pseudo-Random Number Generator AVS demo, you must first deploy an instance of the `IntentSender` contract.
 
 ```bash
 cd contracts/
@@ -16,7 +18,7 @@ forge install
 ```
 Run the install script:
 ```bash
-forge script PRNGDeploy --rpc-url $L2_RPC --private-key $PRIVATE_KEY --broadcast -vvvv --verify --etherscan-api-key $L2_ETHERSCAN_API_KEY --chain $L2_CHAIN --verifier-url $L2_VERIFIER_URL --sig="run(address)" $ATTESTATION_CENTER_ADDRESS
+forge script IntentSenderDeploy --rpc-url $L2_RPC --private-key $PRIVATE_KEY --broadcast -vvvv --verify --etherscan-api-key $L2_ETHERSCAN_API_KEY --chain $L2_CHAIN --verifier-url $L2_VERIFIER_URL --sig="run(address)" $ATTESTATION_CENTER_ADDRESS
 ```
 
 Now go back to the root of the repository and run the docker compose configuraion:
