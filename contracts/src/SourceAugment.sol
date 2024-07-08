@@ -38,11 +38,11 @@ contract LuminaTeleportERC20 is
         _unpause();
     }
 
-    function teleport(address to, uint256 amount) external {
+    function teleport(uint256 chainId, address to, uint256 amount) external {
         _burn(msg.sender, amount);
         // build abi function call
         bytes selector = bytes4(keccak256(bytes("mint(address,uint256)")));
-        IIntentSender(intentSender).sendIntent(to, abi.encodeWithSelector(selector, to, value));
+        IIntentSender(intentSender).sendIntent(chainId, to, abi.encodeWithSelector(selector, to, value));
     }
 
     function _update(

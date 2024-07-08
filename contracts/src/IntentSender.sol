@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 contract IntentSender is IAvsLogic {
     struct Intent {
+        uint256 chainId;
         address to;
         bytes data;
     }
@@ -18,8 +19,12 @@ contract IntentSender is IAvsLogic {
 
     uint public relayerId;
 
-    function sendIntent(address _to, bytes calldata _data) public {
+    event IntentSent(uint256 block, uint256 relayerId);
+
+    function sendIntent(uint256 chainId, address _to, bytes calldata _data) public {
         intents.push(Intent(_to, _data));
+
+        emit IntentSent(block.number, relayerId);
         
     }   
 
