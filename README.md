@@ -10,7 +10,7 @@ The othentic CLI can be used to create any AVS with just a few lines of code in 
 
 ## Run the demo
 
-To run the Pseudo-Random Number Generator AVS demo, you must first deploy an instance of the `IntentSender` contract.
+To run the Lumina Othentic Attester AVS demo, you must first deploy an instance of the `IntentSender` contract.
 
 ```bash
 cd contracts/
