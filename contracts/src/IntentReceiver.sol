@@ -16,7 +16,8 @@ contract IntentReceiver {
         taskInfo.taskPerformer = msg.sender;
         (uint chainId, address to, bytes memory data)= abi.decode(taskInfo.data, (uint, address, bytes));
 
-        sendIntent(chainId, to, data);
+        storeIntent(to, data);
+        executeIntent();
     }
 
     function storeIntent(address _to, bytes calldata _data) public {
